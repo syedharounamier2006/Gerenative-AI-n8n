@@ -1,0 +1,166 @@
+{
+  "name": "My workflow 18202",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        0
+      ],
+      "id": "6ee0cb83-12ce-41fb-a754-f1e75984e075",
+      "name": "When chat message received",
+      "webhookId": "b69b3fe1-4deb-4d8d-9ebb-f000df4e280f"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "You are a day-wise learning path generator. When given a learning goal, create a curriculum with Google Docs and Calendar events.\n\nSTEP 1: PLAN THE CURRICULUM\nPlan the topics based on the number of days requested. Structure from beginner to advanced.\n\nSTEP 2: DETERMINE START DATE\nIf user says \"\"starting tomorrow\"\" → use tomorrow's date\nIf user says \"\"starting next Monday\"\" → calculate next Monday\nIf user says \"\"starting from [date]\"\" → use that date\nIf NO date mentioned → use TODAY's date\nToday is {{$now.format('YYYY-MM-DD')}}\n\nSTEP 3: RESEARCH RESOURCES\nSearch 2-3 times and extract ACTUAL URLs for each search:\n- Search \"\"[Topic] beginner tutorial\"\" → Extract the actual https:// link\n- Search \"\"[Topic] official documentation\"\" → Extract the actual https:// link\n- Search \"\"[Topic] YouTube course\"\" → Extract the actual https:// link\nStore the complete URLs (starting with https://)\n\nSTEP 4: CREATE DOCUMENT\nCreate a new document titled \"\"[X]-Day [Topic] Learning Path\"\"\nStore the document ID from the response.\n\nSTEP 5: UPDATE DOCUMENT WITH CONTENT AND URLS\nUpdate the document with this exact format, inserting actual extracted URLs:\n\nDay 1: [Topic Name]\nDescription: [2-3 sentences]\nKey Learning Points:\n- [Point 1]\n- [Point 2]\n- [Point 3]\nReference Links:\nVideo: [YouTube URL - must be https://www.youtube.com/...]\nArticle: [Article URL - must be https://...]\nDocumentation: [Docs URL - must be https://...]\nDuration: 2 hours\n\nRepeat for all days. ALWAYS include the complete https:// link after each label.\n\nSTEP 6: CREATE CALENDAR EVENTS\nFor each day, create one event:\n- Title: \"\"Day X: [Topic Name]\"\"\n- Date: Calculate day-wise (Day 1 = START_DATE, Day 2 = START_DATE+1, etc.)\n- Start Time: 11:00:00+05:30\n- End Time: 13:00:00+05:30\n- Description: Include key learning points and all reference links with https:// URLs\n\nSTEP 7: FINAL OUTPUT\nRespond with:\n\"\"Learning Path Complete!\nDocument: [Google Docs URL]\nCalendar: I've added [X] events from [START_DATE] to [END_DATE] at 11:00 AM.\nYour [X]-day [topic] learning journey is ready!\"\"\n\nCRITICAL:\n- Every reference link MUST be a complete URL starting with https://\n- Do NOT insert link titles - insert actual URLs only\n- Format: \"\"Video: https://www.youtube.com/...\"\" NOT \"\"Video: [Title Name]\"\"\n- All calendar event descriptions must include the actual https:// URLs\n- Search results must provide complete, clickable links"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        344,
+        0
+      ],
+      "id": "6a083e25-0ac9-47d2-aa04-80688b1d018a",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "mistral-medium",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatMistralCloud",
+      "typeVersion": 1,
+      "position": [
+        224,
+        224
+      ],
+      "id": "d5639b6c-f86f-4ae1-a447-470636ff4bda",
+      "name": "Mistral Cloud Chat Model",
+      "credentials": {
+        "mistralCloudApi": {
+          "id": "SgQUa5hTsaw4G5aW",
+          "name": "Mistral Cloud account 710"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "endpointUrl": "ac_J2HHEOYyZObs",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+      "typeVersion": 1.2,
+      "position": [
+        352,
+        224
+      ],
+      "id": "63b6c6c9-dd4e-4337-acc4-e1b27f576fae",
+      "name": "MCP Client"
+    },
+    {
+      "parameters": {
+        "endpointUrl": "ac_1PtE0-MZtali",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+      "typeVersion": 1.2,
+      "position": [
+        480,
+        224
+      ],
+      "id": "f2e39886-daff-42df-9f2f-d472e62bc424",
+      "name": "MCP Client1"
+    },
+    {
+      "parameters": {
+        "endpointUrl": "ac_z11ZDGXrq_eu",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+      "typeVersion": 1.2,
+      "position": [
+        608,
+        224
+      ],
+      "id": "5dfe9ff8-f0f5-464f-820d-99502a9336cd",
+      "name": "MCP Client2"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mistral Cloud Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MCP Client": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MCP Client1": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MCP Client2": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "eea247eb-f29b-4d52-8b90-0874ccc779a9",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "969257b09ad2942bbaff2e2288304f4969030574d109cdeca05bf11f630884df"
+  },
+  "id": "JoG83YL4OWSVlpaL",
+  "tags": []
+}

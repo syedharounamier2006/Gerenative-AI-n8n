@@ -1,0 +1,246 @@
+{
+  "name": "done",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "# Role\nYou are an intelligent AI assistant that helps users via Telegram.\nYou are talking to {{ $json.message.from.first_name }}{{ $json.message.from.last_name }}\n\n# Behavior\nYou should:\n- Understand the user's intent clearly.\n- Choose the correct tool from the available ones ONLY when needed.\n- Otherwise, answer directly.\n\n# Available Tools & When to Use Them:\n\n## 1. Google Gemini Chat Model\nUse for:\n- Natural conversations\n- Creative writing\n- Open-ended questions\n- Explaining concepts\n- General text generation\n\n## 2. SerpAPI\nUse for:\n- Real-time or factual information from the web\n- News, current events, live sports, current prices\n- Anything requiring recent or external data\n\nWhen using the SerpAPI tool, always structure the call like:\nUse tool SerpAPI with input:\n{\n  \"\"q\"\": \"\"search your query here\"\"\n}\n\n## 3. Calculator\nUse for:\n- Arithmetic\n- Percentages\n- Unit conversions\n- Date or time differences\n\nOnly use if the question involves numbers or calculations. Examples:\n- \"\"What is 40% of 500?\"\"\n- \"\"Convert 20 km to miles\"\"\n\n\n# 4. Wikipedia\nUse for:\n- When searching for a person or company\n\n# 5. Google Calender\nUse for:\n- When creating a calender event\n- Deleting or modifying calender events"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        472,
+        0
+      ],
+      "id": "6a083e25-0ac9-47d2-aa04-80688b1d018a",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "endpointUrl": "ac_J2HHEOYyZObs",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+      "typeVersion": 1.2,
+      "position": [
+        480,
+        224
+      ],
+      "id": "63b6c6c9-dd4e-4337-acc4-e1b27f576fae",
+      "name": "MCP Client"
+    },
+    {
+      "parameters": {
+        "endpointUrl": "ac_z11ZDGXrq_eu",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+      "typeVersion": 1.2,
+      "position": [
+        608,
+        224
+      ],
+      "id": "5dfe9ff8-f0f5-464f-820d-99502a9336cd",
+      "name": "MCP Client2"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        224,
+        224
+      ],
+      "id": "c1c7f7a1-6593-46da-9471-f18221c29d81",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "cfIrRnHm8ynBwamJ",
+          "name": "Google Gemini(PaLM) Api account 10760"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryRedisChat",
+      "typeVersion": 1.5,
+      "position": [
+        352,
+        224
+      ],
+      "id": "469af7f2-480a-43fa-a21d-60b0d428baaf",
+      "name": "Redis Chat Memory"
+    },
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "324703f8-54ae-4e03-b5f9-5d990a0e7f06",
+      "name": "Telegram Trigger",
+      "webhookId": "1bc72a7e-ba1c-4253-9d97-a977afe5f767",
+      "credentials": {
+        "telegramApi": {
+          "id": "j6BTQgqeNNlnhrAM",
+          "name": "Telegram account 3317"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1072,
+        0
+      ],
+      "id": "701c4964-ddc1-4c2a-bebc-4b199f116647",
+      "name": "Send a text message",
+      "webhookId": "b8a83c75-63dd-467f-ac63-f2f16abe65d3",
+      "credentials": {
+        "telegramApi": {
+          "id": "j6BTQgqeNNlnhrAM",
+          "name": "Telegram account 3317"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolCalculator",
+      "typeVersion": 1,
+      "position": [
+        736,
+        224
+      ],
+      "id": "3028cb10-aa29-462e-8b70-9374e61ae1f1",
+      "name": "Calculator"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolWikipedia",
+      "typeVersion": 1,
+      "position": [
+        864,
+        224
+      ],
+      "id": "d72b7f9f-18df-426e-84cb-2989bf54d679",
+      "name": "Wikipedia"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "MCP Client": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MCP Client2": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Redis Chat Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculator": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wikipedia": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "bb2dedbe-3ffe-4762-84d5-451363805e59",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "969257b09ad2942bbaff2e2288304f4969030574d109cdeca05bf11f630884df"
+  },
+  "id": "JoG83YL4OWSVlpaL",
+  "tags": []
+}
