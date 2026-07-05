@@ -1,0 +1,240 @@
+{
+  "name": "AI NEWS SUMMARY",
+  "nodes": [
+    {
+      "parameters": {
+        "url": "https://aibusiness.com/rss.xml",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.2,
+      "position": [
+        1088,
+        112
+      ],
+      "id": "121e95b0-28c2-4835-a735-7499a2a6a8b9",
+      "name": "AI NEWS"
+    },
+    {
+      "parameters": {
+        "sendTo": "harounamierbackupacc@gmail.com\n",
+        "subject": "today AI NEWS",
+        "emailType": "text",
+        "message": "={{ $json.text }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        2112,
+        304
+      ],
+      "id": "7e1d959e-84c9-42d5-a2de-80554c973aaf",
+      "name": "Send a message",
+      "webhookId": "637f0917-67ac-4cb2-a1e2-b7eee85fc65f",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "tt9Mb7meEtptaEL7",
+          "name": "Gmail account 2793"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://techcrunch.com/feed/",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.2,
+      "position": [
+        1088,
+        480
+      ],
+      "id": "908d13a0-1289-4bb7-b297-de1640c4abc6",
+      "name": "Tech "
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1312,
+        288
+      ],
+      "id": "94b9836c-1c7f-4de4-b747-a38e963549d6",
+      "name": "Data merge"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.data }}",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "You are an AI news summarizer handling multiple categories. \n Organize by category: \n \nAI NEWS \n======= \n[Top 3 AI news items]  \n\nTECHNOLOGY UPDATES \n================== \n[Top 3 technology items]  \n\nFor each item: \n- Headline in ALL CAPS \n- 2-3 sentence summary \n- Article link  \n\n\nKeep it professional and scannable."
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        1760,
+        304
+      ],
+      "id": "a1c56b7d-b6ad-4272-b185-26dff3480788",
+      "name": "AI SUMMARY"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 10
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        864,
+        304
+      ],
+      "id": "d79c46d9-144d-47df-a154-e2ad240544e9",
+      "name": "Schedule Trigger1"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        1536,
+        304
+      ],
+      "id": "d95a675a-0a85-4e8f-9bb5-59614e094831",
+      "name": "Aggregate1"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        1832,
+        528
+      ],
+      "id": "bb9d0891-096a-4caf-9dcb-2a9c9c9490c7",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "9p1J2rtDPAtgW84V",
+          "name": "Google Gemini(PaLM) Api account 10498"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "AI NEWS": {
+      "main": [
+        [
+          {
+            "node": "Data merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tech ": {
+      "main": [
+        [
+          {
+            "node": "Data merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Data merge": {
+      "main": [
+        [
+          {
+            "node": "Aggregate1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI SUMMARY": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger1": {
+      "main": [
+        [
+          {
+            "node": "AI NEWS",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Tech ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate1": {
+      "main": [
+        [
+          {
+            "node": "AI SUMMARY",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI SUMMARY",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "0c47bcd1-9520-4dca-a9c6-39c64ebee933",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "969257b09ad2942bbaff2e2288304f4969030574d109cdeca05bf11f630884df"
+  },
+  "id": "HtV1MUQbY81z7osH",
+  "tags": []
+}
